@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: external-dns
+  namespace: external-dns
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: external-dns
+  template:
+    metadata:
+      labels:
+        app: external-dns
+    spec:
+      serviceAccount: external-dns
+      serviceAccountName: external-dns  
+      containers:
+      - name: external-dns
+        image: k8s.gcr.io/external-dns/external-dns:v0.10.1
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: napp-play-dns-update
+                key: access-key-id
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: napp-play-dns-update
+                key: secret-access-key
+        args:
+          - --source=service
+          - --source=ingress
+          - --source=contour-httpproxy # To enable HTTPProxy support
+          # - --source=istio-gateway 
+          # - --source=istio-virtualservice
+          - --source=crd
+          - --domain-filter=cloud.7357.link # will make ExternalDNS see only the hosted zones matching provided domain, omit to process all available hosted zones
+          - --provider=aws
+          # - --policy=upsert-only # would prevent ExternalDNS from deleting any records, omit to enable full synchronization
+          - --aws-zone-type=public # only look at public hosted zones (valid values are public, private or no value for both)
+          - --registry=txt
+          - --txt-owner-id=k8s-napp-ovh
+          - --log-level=debug

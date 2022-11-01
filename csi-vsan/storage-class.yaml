@@ -1,0 +1,14 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+  name: napp-sc
+parameters:
+  # change datastoreurl and storagepolicyname
+  datastoreurl: "ds:///vmfs/volumes/vsan:521aadd7600bd4a2-cb4deb95ed8b5f04/"
+  storagepolicyname: "CSI-NAPP"
+provisioner: csi.vsphere.vmware.com
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+allowVolumeExpansion: true

@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: napp-test-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: napp-sc
+---
+# Example read-write pod
+apiVersion: v1
+kind: Pod
+metadata:
+  name: example-vanilla-file-pod1
+spec:
+  containers:
+    - name: test-container
+      image: gcr.io/google_containers/busybox:1.24
+      command: ["/bin/sh", "-c", "echo 'Hello! This is Pod1' >> /mnt/volume1/index.html && while true ; do sleep 2 ; done"]
+      volumeMounts:
+        - name: test-volume
+          mountPath: /mnt/volume1
+  restartPolicy: Never
+  volumes:
+    - name: test-volume
+      persistentVolumeClaim:
+        claimName: napp-test-pvc

@@ -1,0 +1,1 @@
+Kubernetes Vanilla installation and VMware NAPP installation

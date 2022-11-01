@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      volumes:
+      - name: nginx-html-folder
+        emptyDir: {}
+      containers:
+      - image: nginx
+        name: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+          - name: nginx-html-folder
+            mountPath: /usr/share/nginx/html
+      - image: ubuntu
+        name: ubuntu
+        volumeMounts:
+        - name:  nginx-html-folder
+          mountPath: /html
+        command: ["/bin/sh", "-c"]
+        args:
+          - while true; do
+              out=$(date; hostname); echo $out > /html/index.html;
+              sleep 10;
+            done
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: foo.cloud.7357.link
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: nginx

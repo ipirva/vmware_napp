@@ -1,0 +1,12 @@
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: napp-test.cloud.play.p2o.be
+  namespace: external-dns
+spec:
+  endpoints:
+  - dnsName: napp-test.cloud.7357.link
+    recordTTL: 180
+    recordType: A
+    targets:
+    - 192.168.168.168
