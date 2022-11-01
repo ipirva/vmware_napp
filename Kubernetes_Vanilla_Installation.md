@@ -61,7 +61,6 @@ sudo systemctl disable apparmor && sudo systemctl stop apparmor
 sudo systemctl enable kubelet
 ````
 
-Create DNS entry or 
 ````bash
 # 10.200.1.9 is the address which can be used by the worker node to reach the Kubernetes API on the control node 
 echo "10.200.1.9 napp-k8s-cp-1.cloud.7357.link" | sudo tee --append /etc/hosts
@@ -75,7 +74,10 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 kubectl cluster-info
+````
 
+Add Antrea CNI
+````bash
 kubectl apply -f https://raw.githubusercontent.com/antrea-io/antrea/main/build/yamls/antrea.yml
 ````
 
@@ -140,7 +142,7 @@ On the CP node for each WN do:
 sudo kubeadm token create --print-join-command
 ````
 
-The given command use it to join the WN to the cluster:
+The given command above, use it to join the WN to the cluster:
 ````bash
 sudo kubeadm join 10.200.1.63:6443 --token jtgblf.m1h85ahizlc578ke \
   --discovery-token-ca-cert-hash sha256:72b4d2f3e6ca30b3c28cfe2a19097bba0283de879b1703f52819eac56a4aab04
